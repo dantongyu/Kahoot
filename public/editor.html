@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Editor</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="theme-purple editor">
+
+  <div class="editor-layout">
+    <aside class="editor-sidebar">
+      <a href="/host.html" class="back-link">← Host a game</a>
+      <h2>Quizzes</h2>
+      <div id="quiz-list" class="stack"></div>
+      <button id="new-btn" class="btn btn-outline">+ New quiz</button>
+    </aside>
+
+    <main class="editor-main">
+      <section id="empty" class="editor-empty">
+        <h1 class="logo">Quiz Editor</h1>
+        <p class="muted">Pick a quiz on the left or create a new one.</p>
+      </section>
+
+      <section id="form" class="hidden">
+        <header class="editor-header">
+          <input id="title-input" class="title-input" placeholder="Quiz title" maxlength="80">
+          <div class="editor-actions">
+            <button id="delete-btn" class="btn btn-small btn-danger">Delete</button>
+            <button id="save-btn" class="btn">Save</button>
+          </div>
+        </header>
+        <div id="status" class="status muted"></div>
+        <div id="questions"></div>
+        <button id="add-q-btn" class="btn btn-outline">+ Add question</button>
+      </section>
+    </main>
+  </div>
+
+  <template id="q-template">
+    <div class="q-card">
+      <div class="q-card-head">
+        <span class="q-num pill"></span>
+        <div class="q-card-tools">
+          <label class="muted">Time <input class="time-input" type="number" min="5" max="300" step="5"> s</label>
+          <button class="icon-btn move-up" title="Move up">↑</button>
+          <button class="icon-btn move-down" title="Move down">↓</button>
+          <button class="icon-btn remove" title="Remove question">✕</button>
+        </div>
+      </div>
+      <textarea class="q-text-input" rows="2" placeholder="Question text" maxlength="300"></textarea>
+      <div class="option-grid">
+        <label class="option c0"><input type="radio" class="correct"><span class="shape">▲</span><input class="opt-input" placeholder="Answer 1" maxlength="80"></label>
+        <label class="option c1"><input type="radio" class="correct"><span class="shape">◆</span><input class="opt-input" placeholder="Answer 2" maxlength="80"></label>
+        <label class="option c2"><input type="radio" class="correct"><span class="shape">●</span><input class="opt-input" placeholder="Answer 3" maxlength="80"></label>
+        <label class="option c3"><input type="radio" class="correct"><span class="shape">■</span><input class="opt-input" placeholder="Answer 4" maxlength="80"></label>
+      </div>
+      <div class="muted small-text">Tick the radio next to the correct answer.</div>
+    </div>
+  </template>
+
+  <div id="toast" class="toast hidden"></div>
+  <script src="/js/editor.js"></script>
+</body>
+</html>

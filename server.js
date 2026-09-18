@@ -26,37 +26,48 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Quizzes
 // ---------------------------------------------------------------------------
 
-function loadQuiz(id) {
-  const file = path.join(QUIZ_DIR, `${id}.json`);
-  let data;
-  try {
-    data = JSON.parse(fs.readFileSync(file, 'utf8'));
-  } catch (err) {
-    console.warn(`Skipping quiz ${id}: ${err.message}`);
-    return null;
-  }
-  if (!data || typeof data.title !== 'string' || !Array.isArray(data.questions) || data.questions.length === 0) {
-    console.warn(`Skipping quiz ${id}: missing title or questions`);
-    return null;
-  }
+const QUIZ_ID_RE = /^[\w-]+$/;
+
+/** Returns { quiz } with normalized questions, or { error } describing the first problem. */
+function validateQuiz(data) {
+  if (!data || typeof data !== 'object') return { error: 'Quiz must be an object' };
+  const title = typeof data.title === 'string' ? data.title.trim() : '';
+  if (!title) return { error: 'Title is required' };
+  if (!Array.isArray(data.questions) || data.questions.length === 0) return { error: 'At least one question is required' };
+
   const questions = [];
   for (const [i, q] of data.questions.entries()) {
-    const ok =
-      q && typeof q.text === 'string' &&
-      Array.isArray(q.options) && q.options.length === 4 &&
-      Number.isInteger(q.correct) && q.correct >= 0 && q.correct < 4;
-    if (!ok) {
-      console.warn(`Skipping quiz ${id}: question ${i + 1} is invalid`);
-      return null;
-    }
-    questions.push({
-      text: q.text,
-      options: q.options.map(String),
-      correct: q.correct,
-      timeLimit: Number.isFinite(q.timeLimit) && q.timeLimit > 0 ? q.timeLimit : DEFAULT_TIME_LIMIT,
-    });
+    const n = i + 1;
+    if (!q || typeof q.text !== 'string' || !q.text.trim()) return { error: `Question ${n}: text is required` };
+    if (!Array.isArray(q.options) || q.options.length !== 4) return { error: `Question ${n}: exactly 4 options are required` };
+    const options = q.options.map((o) => String(o ?? '').trim());
+    if (options.some((o) => !o)) return { error: `Question ${n}: all 4 options must be filled in` };
+    if (!Number.isInteger(q.correct) || q.correct < 0 || q.correct > 3) return { error: `Question ${n}: pick the correct answer` };
+    const timeLimit = q.timeLimit === undefined || q.timeLimit === null || q.timeLimit === '' ? DEFAULT_TIME_LIMIT : Number(q.timeLimit);
+    if (!Number.isFinite(timeLimit) || timeLimit < 5 || timeLimit > 300) return { error: `Question ${n}: time limit must be 5–300 seconds` };
+    questions.push({ text: q.text.trim(), options, correct: q.correct, timeLimit });
   }
-  return { id, title: data.title, questions };
+  return { quiz: { title, questions } };
+}
+
+function quizFile(id) {
+  return path.join(QUIZ_DIR, `${id}.json`);
+}
+
+function loadQuiz(id) {
+  let data;
+  try {
+    data = JSON.parse(fs.readFileSync(quizFile(id), 'utf8'));
+  } catch (err) {
+    if (err.code !== 'ENOENT') console.warn(`Skipping quiz ${id}: ${err.message}`);
+    return null;
+  }
+  const { quiz, error } = validateQuiz(data);
+  if (error) {
+    console.warn(`Skipping quiz ${id}: ${error}`);
+    return null;
+  }
+  return { id, ...quiz };
 }
 
 function listQuizzes() {
@@ -72,8 +83,60 @@ function listQuizzes() {
     .map((q) => ({ id: q.id, title: q.title, questionCount: q.questions.length }));
 }
 
+function slugify(title) {
+  return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'quiz';
+}
+
+function saveQuiz(id, quiz) {
+  fs.mkdirSync(QUIZ_DIR, { recursive: true });
+  fs.writeFileSync(quizFile(id), JSON.stringify(quiz, null, 2) + '\n');
+}
+
+// ---- Quiz API (used by host page and editor) ----
+
+app.use('/api', express.json({ limit: '1mb' }));
+
+function requireQuizId(req, res, next) {
+  if (!QUIZ_ID_RE.test(req.params.id)) return res.status(400).json({ error: 'Invalid quiz id' });
+  next();
+}
+
 app.get('/api/quizzes', (req, res) => {
   res.json(listQuizzes());
+});
+
+app.get('/api/quizzes/:id', requireQuizId, (req, res) => {
+  const quiz = loadQuiz(req.params.id);
+  if (!quiz) return res.status(404).json({ error: 'Quiz not found' });
+  res.json(quiz);
+});
+
+app.post('/api/quizzes', (req, res) => {
+  const { quiz, error } = validateQuiz(req.body);
+  if (error) return res.status(400).json({ error });
+  const base = slugify(quiz.title);
+  let id = base;
+  for (let n = 2; fs.existsSync(quizFile(id)); n++) id = `${base}-${n}`;
+  saveQuiz(id, quiz);
+  res.status(201).json({ id, ...quiz });
+});
+
+app.put('/api/quizzes/:id', requireQuizId, (req, res) => {
+  if (!fs.existsSync(quizFile(req.params.id))) return res.status(404).json({ error: 'Quiz not found' });
+  const { quiz, error } = validateQuiz(req.body);
+  if (error) return res.status(400).json({ error });
+  saveQuiz(req.params.id, quiz);
+  res.json({ id: req.params.id, ...quiz });
+});
+
+app.delete('/api/quizzes/:id', requireQuizId, (req, res) => {
+  try {
+    fs.unlinkSync(quizFile(req.params.id));
+  } catch (err) {
+    if (err.code === 'ENOENT') return res.status(404).json({ error: 'Quiz not found' });
+    throw err;
+  }
+  res.status(204).end();
 });
 
 // ---------------------------------------------------------------------------
@@ -292,7 +355,7 @@ io.on('connection', (socket) => {
 
   socket.on('host:create', ({ quizId } = {}) => {
     if (socket.data.role) return fail('Already in a game');
-    if (typeof quizId !== 'string' || !/^[\w-]+$/.test(quizId)) return fail('Invalid quiz');
+    if (typeof quizId !== 'string' || !QUIZ_ID_RE.test(quizId)) return fail('Invalid quiz');
     const quiz = loadQuiz(quizId);
     if (!quiz) return fail('Quiz not found');
 

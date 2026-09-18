@@ -32,7 +32,11 @@ npm start
 
 ## Adding quizzes
 
-Drop a JSON file into `quizzes/`. It is picked up without restarting the server.
+Open the editor at http://localhost:3000/editor.html (also linked from the host
+page). You can create, edit, reorder, and delete quizzes there; changes are saved as
+JSON files in `quizzes/` and picked up immediately.
+
+You can also drop a JSON file straight into `quizzes/`:
 
 ```json
 {
