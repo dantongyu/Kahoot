@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Quiz Player</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="theme-purple player">
+
+  <!-- Join -->
+  <section id="join" class="screen center">
+    <h1 class="logo">Quiz!</h1>
+    <form id="join-form" class="stack">
+      <input id="pin-input" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="Game PIN" autocomplete="off" required>
+      <input id="nick-input" maxlength="20" placeholder="Nickname" autocomplete="off" required>
+      <button class="btn btn-big" type="submit">Enter</button>
+    </form>
+  </section>
+
+  <!-- Waiting in lobby -->
+  <section id="lobby" class="screen center hidden">
+    <h1>You're in!</h1>
+    <p class="big" id="my-name"></p>
+    <p class="muted">See your name on screen? Waiting for the host to start…</p>
+    <p class="muted"><span id="lobby-count">1</span> players joined</p>
+  </section>
+
+  <!-- Answering -->
+  <section id="answer" class="screen hidden">
+    <header class="q-header">
+      <span id="p-counter" class="pill"></span>
+      <span id="p-timer" class="pill"></span>
+    </header>
+    <div class="timer"><div id="p-timer-bar" class="timer-bar"></div></div>
+    <div id="p-options" class="answer-grid fill"></div>
+  </section>
+
+  <!-- Answer locked -->
+  <section id="locked" class="screen center hidden">
+    <h1>Answer locked in!</h1>
+    <p class="muted">Waiting for the others…</p>
+  </section>
+
+  <!-- Result -->
+  <section id="result" class="screen center hidden">
+    <h1 id="res-title"></h1>
+    <p id="res-points" class="big"></p>
+    <p id="res-streak" class="muted"></p>
+    <p id="res-rank" class="muted"></p>
+  </section>
+
+  <!-- Final -->
+  <section id="final" class="screen center hidden">
+    <h1>Game over</h1>
+    <p id="final-rank" class="big"></p>
+    <p id="final-score" class="muted"></p>
+    <ol id="final-podium" class="leaderboard"></ol>
+    <a class="btn btn-outline" href="/player.html" id="play-again">Play again</a>
+  </section>
+
+  <!-- Ended -->
+  <section id="ended" class="screen center hidden">
+    <h1>Game ended</h1>
+    <p id="ended-reason" class="muted"></p>
+    <a class="btn btn-outline" href="/player.html">Join another game</a>
+  </section>
+
+  <footer id="player-bar" class="player-bar hidden">
+    <span id="bar-name"></span>
+    <span id="bar-score">0</span>
+  </footer>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/player.js"></script>
+</body>
+</html>

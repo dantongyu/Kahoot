@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Host</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="theme-purple host">
+
+  <!-- Pick a quiz -->
+  <section id="pick" class="screen center">
+    <h1 class="logo">Quiz!</h1>
+    <h2>Choose a quiz</h2>
+    <div id="quiz-list" class="stack"></div>
+  </section>
+
+  <!-- Lobby -->
+  <section id="lobby" class="screen hidden">
+    <header class="pin-banner">
+      <div>
+        <div class="muted">Join at <strong id="join-url"></strong></div>
+        <div class="muted">Game PIN</div>
+        <div id="pin" class="pin"></div>
+      </div>
+      <div class="pin-banner-right">
+        <div id="quiz-title" class="quiz-title"></div>
+        <div class="muted"><span id="player-count">0</span> players</div>
+        <button id="start-btn" class="btn">Start</button>
+      </div>
+    </header>
+    <div id="player-list" class="player-list"></div>
+    <p class="muted center-text">Waiting for players to join…</p>
+  </section>
+
+  <!-- Question -->
+  <section id="question" class="screen hidden">
+    <header class="q-header">
+      <span id="q-counter" class="pill"></span>
+      <span id="answer-count" class="pill"></span>
+    </header>
+    <div class="timer"><div id="timer-bar" class="timer-bar"></div></div>
+    <div id="q-text" class="q-text"></div>
+    <div id="q-timer-num" class="timer-num"></div>
+    <div id="q-options" class="answer-grid"></div>
+  </section>
+
+  <!-- Results -->
+  <section id="results" class="screen hidden">
+    <header class="q-header">
+      <span id="r-counter" class="pill"></span>
+      <button id="next-btn" class="btn">Next</button>
+    </header>
+    <div id="r-text" class="q-text small"></div>
+    <div id="r-chart" class="chart"></div>
+    <div id="r-options" class="answer-grid compact"></div>
+    <h3>Leaderboard</h3>
+    <ol id="r-leaderboard" class="leaderboard"></ol>
+  </section>
+
+  <!-- Podium -->
+  <section id="podium" class="screen center hidden">
+    <h1>Final results</h1>
+    <div id="podium-stands" class="podium"></div>
+    <ol id="final-leaderboard" class="leaderboard"></ol>
+    <a class="btn btn-outline" href="/host.html">New game</a>
+  </section>
+
+  <div id="toast" class="toast hidden"></div>
+  <button id="end-btn" class="btn btn-small end-btn hidden">End game</button>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/host.js"></script>
+</body>
+</html>

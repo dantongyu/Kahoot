@@ -1,0 +1,13 @@
+{
+  "title": "Science",
+  "questions": [
+    { "text": "What is the chemical symbol for gold?", "options": ["Go", "Gd", "Au", "Ag"], "correct": 2, "timeLimit": 15 },
+    { "text": "What gas do plants absorb from the atmosphere?", "options": ["Oxygen", "Carbon dioxide", "Nitrogen", "Hydrogen"], "correct": 1, "timeLimit": 15 },
+    { "text": "How many bones are in the adult human body?", "options": ["186", "206", "226", "246"], "correct": 1, "timeLimit": 20 },
+    { "text": "What is the speed of light in a vacuum (approx.)?", "options": ["300,000 km/s", "150,000 km/s", "1,000,000 km/s", "30,000 km/s"], "correct": 0, "timeLimit": 20 },
+    { "text": "Which particle has a negative charge?", "options": ["Proton", "Neutron", "Electron", "Photon"], "correct": 2, "timeLimit": 10 },
+    { "text": "What is H2O commonly known as?", "options": ["Salt", "Water", "Hydrogen peroxide", "Ozone"], "correct": 1, "timeLimit": 10 },
+    { "text": "What is the hardest natural substance?", "options": ["Quartz", "Iron", "Diamond", "Titanium"], "correct": 2, "timeLimit": 15 },
+    { "text": "What force keeps planets in orbit around the Sun?", "options": ["Magnetism", "Friction", "Gravity", "Inertia"], "correct": 2, "timeLimit": 15 }
+  ]
+}

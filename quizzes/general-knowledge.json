@@ -1,0 +1,13 @@
+{
+  "title": "General Knowledge",
+  "questions": [
+    { "text": "What is the capital of Australia?", "options": ["Sydney", "Canberra", "Melbourne", "Perth"], "correct": 1, "timeLimit": 20 },
+    { "text": "How many continents are there?", "options": ["5", "6", "7", "8"], "correct": 2, "timeLimit": 15 },
+    { "text": "Which planet is known as the Red Planet?", "options": ["Venus", "Jupiter", "Saturn", "Mars"], "correct": 3, "timeLimit": 15 },
+    { "text": "Who painted the Mona Lisa?", "options": ["Leonardo da Vinci", "Pablo Picasso", "Vincent van Gogh", "Michelangelo"], "correct": 0, "timeLimit": 20 },
+    { "text": "What is the largest ocean on Earth?", "options": ["Atlantic", "Indian", "Pacific", "Arctic"], "correct": 2, "timeLimit": 15 },
+    { "text": "In which year did the Berlin Wall fall?", "options": ["1987", "1989", "1991", "1993"], "correct": 1, "timeLimit": 20 },
+    { "text": "What is the smallest prime number?", "options": ["0", "1", "2", "3"], "correct": 2, "timeLimit": 10 },
+    { "text": "Which language has the most native speakers?", "options": ["English", "Spanish", "Hindi", "Mandarin Chinese"], "correct": 3, "timeLimit": 20 }
+  ]
+}
